@@ -9,10 +9,10 @@ import threading
 
 
 start = time.clock()
-pages = set()
+random.seed(datetime.datetime.now())
 
 
-# Retrive a list of all internal links in a page
+# Retrieve a list of all internal links in a page
 def getInternalLinks(soup, includeUrl):
     internalLinks = []
 
@@ -40,6 +40,22 @@ def getExternalLinks(soup, excludeUrl):
     return externalLinks
 
 
+def splitAddress(address):
+    return address.replace("http://", "").split("/")
+
+
+def getRandomExternalLink(firstPage):
+    soup = BeautifulSoup(urlopen(firstPage), features="html.parser")
+    externalLinks = getExternalLinks(soup, firstPage)
+    if len(externalLinks) == 0:
+        internalLinks = getInternalLinks(firstPage)
+        getRandomExternalLink(internalLinks[random.randint(0, len(internalLinks) - 1)])
+    else:
+        return externalLinks[random.randint(0, len(externalLinks) - 1)]
+
+
+def followExternalOnly(startingPage):
+    pass
 if __name__ == "__main__":
     pass
 
