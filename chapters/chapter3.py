@@ -20,10 +20,11 @@ def getAllExternalLinks(siteUrl):
     # handling request errors
     try:
         html = urlopen(siteUrl)
-    except URLError:
-        return -1
+
     except HTTPError as e:
         return e.getcode()
+    except URLError:
+        return -1
 
     soup = BeautifulSoup(html, features="html.parser")
     externalLinks = getExternalLinks(soup, splitAddress(siteUrl)[0])
@@ -118,7 +119,7 @@ def followExternalOnly(startingSite):
 
 
 if __name__ == "__main__":
-    url = "https://www.lasalle.edu.br"
+    url = "https://www.facebook.com"
     followExternalOnly(url)
 
 end = time.clock()
