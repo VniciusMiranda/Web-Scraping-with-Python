@@ -3,11 +3,14 @@ from urllib.error import HTTPError
 from urllib.error import URLError
 from socket import timeout
 from bs4 import BeautifulSoup
+from chapters.chapter3 import getInternalLinks
 import datetime
 import random
 import json
 import time
 import re
+
+
 start = time.time()
 random.seed(datetime.datetime.now())
 
@@ -119,7 +122,8 @@ def getEditorsCountries(startingPage, accessKey, limit=None):
             editorsIPS.add(ipAddress)
             countries.append(country)
 
-    internalLinks = getLinks(startingPage)
+    internalLinks = getInternalLinks(soup, startingPage)
+    print(internalLinks)
     while len(internalLinks):
 
         nextPage = wikiUrl + internalLinks[random.randint(0, len(internalLinks) - 1)]
@@ -190,10 +194,10 @@ def getHistoryIPs(pageUrl):
 
 
 if __name__ == "__main__":
-    key = "<API_KEY>"
+    key = "95c903456250e0d9a7bf4d7f5420ce05"
     url = "https://en.wikipedia.org/wiki/Lua_(programming_language)"
 
-    print(getEditorsCountries(url, key, 1000))
+    print(getEditorsCountries(url, key, 5))
     print(f"the country where most of the editors are from is: {mostFrequent(countries)}")
 
 end = time.time()
