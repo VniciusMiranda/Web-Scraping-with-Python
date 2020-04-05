@@ -3,12 +3,10 @@ from urllib.error import URLError
 from urllib.error import HTTPError
 from bs4 import BeautifulSoup
 import re
-import time
 import datetime
 import random
 
 
-start = time.clock()
 random.seed(datetime.datetime.now())
 
 allIntLinks = set()
@@ -48,7 +46,6 @@ def getInternalLinks(soup, includeUrl):
 
     # Finds all links that begin with a "/"
     for link in soup.findAll("a", href=re.compile("^(/|.*"+includeUrl+")")):
-
         if link.attrs['href'] is not None:
             if link.attrs['href'] not in internalLinks:
                 internalLinks.append(link.attrs['href'])
@@ -71,7 +68,7 @@ def getExternalLinks(soup, excludeUrl):
 
 
 def splitAddress(address):
-    return address.replace("http://", "").split("/")
+    return address.replace("https://", "").split("/")
 
 
 def getRandomExternalLink(firstPage):
@@ -116,14 +113,3 @@ def followExternalOnly(startingSite):
     print("Random external link is: " + externalLink)
     print("-"*50)
     followExternalOnly(externalLink)
-
-
-if __name__ == "__main__":
-    url = "https://www.facebook.com"
-    followExternalOnly(url)
-
-end = time.clock()
-
-print("=" * 60)
-
-print(f"the program took: {end - start} seconds to execute...")
