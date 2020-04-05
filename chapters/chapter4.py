@@ -1,3 +1,29 @@
+"""
+                    ===> Chapter 4: Using APIs <===
+
+        --- code samples of the book Web Scraping with Python ---
+
+    This chapter introduce the idea of working with APIs while scraping
+or crawling trough the web.
+
+    It gives a brief idea of how APIs works and talks about some examples
+of APIs that might be useful, then it explain how to make request for APIs
+and work with the data gathered,for example how to transform and JSON object
+into a python dictionary using the python build-in library json.
+
+    As a pratical example it gives the sample code of a program that uses an
+API that gives the geographic location of IP addresses to find out which is
+the country that most editors of wikipedia are from.
+
+    To test what I had learned so far I tried to build an program that does the
+same as the one gave by the book without looking the example.
+
+    TODO: would be interesting to build a library and reuse this code on it :)
+
+
+"""
+
+
 from urllib.request import urlopen
 from urllib.error import HTTPError
 from urllib.error import URLError
@@ -18,7 +44,7 @@ random.seed(datetime.datetime.now())
 '''
 -----------------------------------------------------------------
 
-problem - find the country of the editors of wikipedia pages
+problem - find the home country of the wikipedia page editors
 
 My solution is bellow
 '''
@@ -94,12 +120,6 @@ def getEditorsCountries(startingPage, accessKey, limit=None):
     global countries
     global LIMIT
 
-    if limit is not None:
-        print(f"LIMIT = {LIMIT}\nexits when: LIMIT > {limit}")
-        if LIMIT > limit:
-            return "the limit was reached\nexiting function..."
-
-    LIMIT += 1
     wikiUrl = "https://wikipedia.org"
 
     try:
@@ -123,16 +143,23 @@ def getEditorsCountries(startingPage, accessKey, limit=None):
             countries.append(country)
 
     internalLinks = getInternalLinks(soup, startingPage)
-    print(internalLinks)
     while len(internalLinks):
 
         nextPage = wikiUrl + internalLinks[random.randint(0, len(internalLinks) - 1)]
 
         print("="*60)
         print("going to url:" + nextPage)
+
+        if limit is not None:
+            print(f"LIMIT = {LIMIT}\nexits when: LIMIT > {limit}")
+            if LIMIT > limit:
+                break
+
+        LIMIT += 1
+
         getEditorsCountries(nextPage, accessKey, limit)
 
-    return "no internal links\nexiting function..."
+    return "no internal links or limit reached\nexiting function..."
 
 
 def mostFrequent(list_):
@@ -149,7 +176,7 @@ def mostFrequent(list_):
 '''
 -----------------------------------------------------------------
 
-problem - find the country of the editors of wikipedia pages
+problem - find the home country of wikipedia pages editors 
 
 The solution from the book
 '''
@@ -194,7 +221,8 @@ def getHistoryIPs(pageUrl):
 
 
 if __name__ == "__main__":
-    key = "95c903456250e0d9a7bf4d7f5420ce05"
+
+    key = "<enter_your_key_here>"
     url = "https://en.wikipedia.org/wiki/Lua_(programming_language)"
 
     print(getEditorsCountries(url, key, 5))
@@ -205,17 +233,3 @@ end = time.time()
 print("-"*60)
 print(f"duration: {end - start}")
 
-
-# class WikiArticle:
-#
-#     def __init__(self, startingPage, rLimit=-1):
-#
-#         random.seed(datetime.datetime.now())
-#
-#         self.editorsIPS = set()
-#         self.countries = list()
-#
-#         self.rLimit = rLimit
-#         self.startingPage = startingPage
-#
-#

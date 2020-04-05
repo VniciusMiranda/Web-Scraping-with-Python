@@ -1,3 +1,26 @@
+"""
+                 ===> Chapter 3: Starting to Crawl <===
+
+        --- code samples of the book Web Scraping with Python ---
+
+    This chapter introduce the idea of crawling trough the web or a site.
+
+    Most part of the chapter relies on teaching techniques to find external
+or internal links of a page and recursively entering these links and finding
+the information wanted.
+
+    The code bellow is basically copy and pasted from the book, there is little
+to none existing contribution of my part.
+
+    One of the things that I found that are interesting from this chapter is the use
+of regular expressions to filter the data wanted. I wasn't even ware of the existence
+of regular expressions so it was pretty cool to learning about it.
+
+    OBS: You might have notice that the chapters 1 and 2 are missing from this
+repository, that's because these chapters are really basic and doesn't have much
+to document.
+"""
+
 from urllib.request import urlopen
 from urllib.error import URLError
 from urllib.error import HTTPError
