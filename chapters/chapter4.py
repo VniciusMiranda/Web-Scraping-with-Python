@@ -1,7 +1,7 @@
 """
                     ===> Chapter 4: Using APIs <===
 
-        --- code samples of the book Web Scraping with Python ---
+        --- code samples from the book Web Scraping with Python ---
 
     This chapter introduce the idea of working with APIs while scraping
 or crawling trough the web.
@@ -28,13 +28,14 @@ from urllib.request import urlopen
 from urllib.error import HTTPError
 from urllib.error import URLError
 from socket import timeout
-from bs4 import BeautifulSoup
-from chapters.chapter3 import getInternalLinks
 import datetime
 import random
 import json
 import time
 import re
+
+from bs4 import BeautifulSoup
+from chapters.chapter3 import getInternalLinks
 
 
 start = time.time()

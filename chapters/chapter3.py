@@ -1,7 +1,7 @@
 """
                  ===> Chapter 3: Starting to Crawl <===
 
-        --- code samples of the book Web Scraping with Python ---
+        --- code samples from the book Web Scraping with Python ---
 
     This chapter introduce the idea of crawling trough the web or a site.
 
@@ -24,10 +24,11 @@ to document.
 from urllib.request import urlopen
 from urllib.error import URLError
 from urllib.error import HTTPError
-from bs4 import BeautifulSoup
 import re
 import datetime
 import random
+
+from bs4 import BeautifulSoup
 
 
 random.seed(datetime.datetime.now())
