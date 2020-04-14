@@ -25,8 +25,7 @@ same as the one gave by the book without looking the example.
 
 
 from urllib.request import urlopen
-from urllib.error import HTTPError
-from urllib.error import URLError
+from urllib.error import HTTPError, URLError
 from socket import timeout
 import datetime
 import random
