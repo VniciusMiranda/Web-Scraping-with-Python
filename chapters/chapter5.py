@@ -17,8 +17,12 @@ from urllib.error import HTTPError, URLError
 import csv
 import pymysql as sql
 import os
-
+import random
+import datetime as dt
 from bs4 import BeautifulSoup
+
+
+random.seed(dt.datetime.now())
 
 """
 the example of the book happens to be pretty inconsistent
@@ -111,15 +115,21 @@ def wikiTableToCSV(url: str, csvPath):
             writer.writerow(csvRow)
 
 
-def dataBase():
-    connection = sql.connect(host='127.0.0.1', unix_socket='/var/run/mysqld/mysqld.sock',
-                             user='root', passwd='Piloto_052399651', db='mysql')
+def storeToDB(title, content, cursor):
 
-    cursor = connection.cursor()
+    pass
+
+
+def dataBaseStart(user, password, db='mysql', charset='utf8',
+                  unix_socket="/var/run/mysqld/mysqld.sock", host='localhost'):
+
+    connection = sql.connect(host=host, unix_socket=unix_socket,
+                             user=user, password=password, db=db, charset=charset)
+
+    return connection.cursor()
 
 
 if __name__ == "__main__":
-
     wikiTableToCSV("https://en.wikipedia.org/wiki/Comparison_of_text_editors", "../files/test.csv")
 
 
