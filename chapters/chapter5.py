@@ -24,13 +24,22 @@ from bs4 import BeautifulSoup
 
 random.seed(dt.datetime.now())
 
-"""
-the example of the book happens to be pretty inconsistent
-so I decided to create my own example for this.
-the code bellow is all mine heheheheh
-"""
+connection = sql.connect()
+cursor = connection.cursor()
+cursor.execute("USE scraping")
+
 downloadDirectory = "downloaded"
 baseURL = "http://pythonscraping.com"
+
+
+def storeToDB(title, content):
+    global cursor
+    cursor.execute(f"INSERT INTO pages (title, content ) VALUES ({title}, {content})")
+    cursor.connection.commit()
+
+
+def getLinks():
+    pass
 
 
 def getImages(url: str) -> int or list:
@@ -113,20 +122,6 @@ def wikiTableToCSV(url: str, csvPath):
                 csvRow.append(text)
 
             writer.writerow(csvRow)
-
-
-def storeToDB(title, content, cursor):
-
-    pass
-
-
-def dataBaseStart(user, password, db='mysql', charset='utf8',
-                  unix_socket="/var/run/mysqld/mysqld.sock", host='localhost'):
-
-    connection = sql.connect(host=host, unix_socket=unix_socket,
-                             user=user, password=password, db=db, charset=charset)
-
-    return connection.cursor()
 
 
 if __name__ == "__main__":
