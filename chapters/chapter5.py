@@ -15,6 +15,7 @@
 from urllib.request import urlopen, urlretrieve
 from urllib.error import HTTPError, URLError
 import csv
+import pymysql as sql
 import os
 
 from bs4 import BeautifulSoup
@@ -108,6 +109,13 @@ def wikiTableToCSV(url: str, csvPath):
                 csvRow.append(text)
 
             writer.writerow(csvRow)
+
+
+def dataBase():
+    connection = sql.connect(host='127.0.0.1', unix_socket='/var/run/mysqld/mysqld.sock',
+                             user='root', passwd='Piloto_052399651', db='mysql')
+
+    cursor = connection.cursor()
 
 
 if __name__ == "__main__":
