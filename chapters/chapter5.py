@@ -41,7 +41,7 @@ def storeToDB(title, content):
 
 def getLinks(articleLink):
     try:
-        html = open(articleLink)
+        html = open("https://en.wikipedia.org" + articleLink)
     except HTTPError as e:
         print(f"HTTP error\ncode: {e.getcode()}\n returning None")
         return None
@@ -57,6 +57,26 @@ def getLinks(articleLink):
     storeToDB(title, content)
 
     return soup.find("div", {"class": "bodyContent"}).findAll("a", href=re.compile("^(/wiki/)((?!:).)*$"))
+
+
+def getWiki(limit=None):
+    global cursor
+    global connection
+    counter = 0
+    links = getLinks("/wiki/Kevin_Bacon")
+
+    try:
+        while len(links) > 0:
+            if limit is not None:
+                if counter > limit:
+                    break
+            newArticle = links[random.randint(0, len(links) - 1)].attrs["href"]
+            print(f"going to {newArticle}")
+            print("-"*60)
+            links = getLinks(newArticle)
+    finally:
+        cursor.close()
+        connection.close()
 
 
 def getImages(url: str) -> int or list:
