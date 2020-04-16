@@ -16,6 +16,7 @@ from urllib.request import urlopen, urlretrieve
 from urllib.error import HTTPError, URLError
 import csv
 import pymysql as sql
+import re
 import os
 import random
 import datetime as dt
@@ -38,8 +39,24 @@ def storeToDB(title, content):
     cursor.connection.commit()
 
 
-def getLinks():
-    pass
+def getLinks(articleLink):
+    try:
+        html = open(articleLink)
+    except HTTPError as e:
+        print(f"HTTP error\ncode: {e.getcode()}\n returning None")
+        return None
+    except URLError:
+        print("url error\nreturning None...")
+        return None
+
+    soup = BeautifulSoup(html, features="html.parser")
+
+    title = soup.find("h1").find("span").get_text()
+
+    content = soup.find("div", {"id": "mw-content-text"}).find("p").get_text()
+    storeToDB(title, content)
+
+    return soup.find("div", {"class": "bodyContent"}).findAll("a", href=re.compile("^(/wiki/)((?!:).)*$"))
 
 
 def getImages(url: str) -> int or list:
