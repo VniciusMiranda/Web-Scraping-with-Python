@@ -4,24 +4,26 @@
         --- code samples from the book Web Scraping with Python ---
 
             The chapter started showing the uses of the urllib method,
-        urlretrieve(). The part of the code bellow where an example is
-        given was partially made by me by just modifying the code example
-        from the book that was getting some links of js files, when the
-        initial objective was to download only the images of the site.
-            Started to use a data base to store the data scraped from wiki-
-        pedia. There was some setbacks during the installation but it was
-        mostly small stuff. Learned a bit of SQL and about pymySQL. The way
-        that the use of the data base is abstracted by pymysql is that the
-        whole thing (at least for now is how I see the process) is separated
-        in two classes Connection and Cursor. An instance of the Connection
-        class is responsible for handling the data that is sent to the data
-        base, handling rollbacks and creating Cursors. A cursor keeps track of
-        certain state information, such as which database it is using. If you
-        have multiple databases and need to write information across all of them,
-        you might have multiple cursors to handle this. A cursor also contains the
-        results of the latest query it has executed. By calling functions on the cursor,
-        such as cur.fetchone() , you can access this information.
+        urlretrieve(). That part was pretty small and there wasn't much
+        new stuff.
 
+            The next topic was a bit more interesting. It was presented
+        the csv module in python that helps when storing the data trough
+        csv files. basically the only object that was use from this module
+        was the writer.
+
+            Started to use a data base to store the data scraped from wiki-
+        pedia.There was some setbacks during the installation but it was
+        just because I was too careless during the installation process.
+
+            Learned a bit of SQL and about pymySQL. The way that the use of
+        the database is abstracted by pymysql is that the whole thing (at
+        least for now is how I see the process) is separating the whole
+        process in two classes Connection and Cursor. The first is self
+        explanatory. Thesecond stores the information about the last query
+        made by it self, let's say that a SELECT keyword was use and retrieve
+        some rows from the database,this information can be accesses by the
+        cursor.
 
 """
 
@@ -43,9 +45,6 @@ connection = sql.connect(host='localhost', unix_socket='/var/run/mysqld/mysqld.s
 
 cursor = connection.cursor()
 cursor.execute("USE scraping")
-
-downloadDirectory = "downloaded"
-baseURL = "http://pythonscraping.com"
 
 
 def storeToDB(title, content: str):
