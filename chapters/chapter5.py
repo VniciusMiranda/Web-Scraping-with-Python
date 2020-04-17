@@ -37,6 +37,10 @@ import random
 import datetime as dt
 from bs4 import BeautifulSoup
 
+"""
+++++++++++++++++++++++++
+SQL Storing code
+"""
 
 random.seed(dt.datetime.now())
 
@@ -44,7 +48,18 @@ connection = sql.connect(host='localhost', unix_socket='/var/run/mysqld/mysqld.s
                          password='Piloto_052399651', user='root', db='mysql', charset='utf8')
 
 cursor = connection.cursor()
-cursor.execute("USE scraping")
+cursor.execute("USE wikipedia")
+
+
+def insertPageIfNotExist(url):
+    global cursor
+    cursor.execute(f"SELECT * FROM pages WHERE url = '{url}'")
+    if cursor.rowcount == 0:
+        cursor.execute(f"INSERT INTO pages (url) VALUES ({url})")
+        connection.commit()
+        return cursor.lastrowid
+    else:
+        return cursor.fetchone()[0]
 
 
 def storeToDB(title, content: str):
@@ -102,6 +117,12 @@ def getWiki(limit=None):
         connection.close()
 
 
+"""
++++++++++++++++++++++++
+Image Downloading code
+"""
+
+
 def getImages(url: str) -> int or list:
     """
     :param url: str
@@ -146,6 +167,11 @@ def getDownloadPath(baseUrl: str, downloadUrl: str, downloadDir: str) -> str:
 
     return path
 
+"""
++++++++++++++++++++++
+CSV storing code
+"""
+
 
 def test_csv():
     with open("../files/test.ods", "w+") as test:
@@ -183,6 +209,10 @@ def wikiTableToCSV(url: str, csvPath):
 
             writer.writerow(csvRow)
 
+
+"""
+++++++++++++++++++++++++++++++
+"""
 
 if __name__ == "__main__":
     getWiki(100)
