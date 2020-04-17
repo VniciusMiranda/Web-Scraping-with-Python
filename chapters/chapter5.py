@@ -8,6 +8,19 @@
         given was partially made by me by just modifying the code example
         from the book that was getting some links of js files, when the
         initial objective was to download only the images of the site.
+            Started to use a data base to store the data scraped from wiki-
+        pedia. There was some setbacks during the installation but it was
+        mostly small stuff. Learned a bit of SQL and about pymySQL. The way
+        that the use of the data base is abstracted by pymysql is that the
+        whole thing (at least for now is how I see the process) is separated
+        in two classes Connection and Cursor. An instance of the Connection
+        class is responsible for handling the data that is sent to the data
+        base, handling rollbacks and creating Cursors. A cursor keeps track of
+        certain state information, such as which database it is using. If you
+        have multiple databases and need to write information across all of them,
+        you might have multiple cursors to handle this. A cursor also contains the
+        results of the latest query it has executed. By calling functions on the cursor,
+        such as cur.fetchone() , you can access this information.
 
 
 """
@@ -38,7 +51,9 @@ baseURL = "http://pythonscraping.com"
 def storeToDB(title, content: str):
     global cursor
 
-    print(f"executing query INSERT INTO pages (title, content ) VALUES ({title}, {content})")
+    title = title.replace('"', "")
+    content = content.replace('"', "")
+    print(f'executing query INSERT INTO pages (title, content ) VALUES ("{title}", "{content}")')
     cursor.execute(f'INSERT INTO pages (title, content ) VALUES ("{title}", "{content}")')
     cursor.connection.commit()
     print("committed successfully")
@@ -62,7 +77,7 @@ def getLinks(articleLink):
     print(f"the title text is:{content}")
     storeToDB(title, content)
     print("retrieving links...")
-    links = soup.find("div", {"class": "bodyContent"}).findAll("a", href=re.compile("^(/wiki/)((?!:).)*$"))
+    links = soup.find("div", {"id": "bodyContent"}).findAll("a", href=re.compile("^(/wiki/)((?!:).)*$"))
     print("successfully retrieved the links")
     return links
 
