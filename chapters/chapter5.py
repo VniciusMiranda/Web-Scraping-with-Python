@@ -25,7 +25,9 @@ from bs4 import BeautifulSoup
 
 random.seed(dt.datetime.now())
 
-connection = sql.connect()
+connection = sql.connect(host='localhost', unix_socket='/var/run/mysqld/mysqld.sock',
+                         password='Piloto_052399651', user='root', db='mysql', charset='utf8')
+
 cursor = connection.cursor()
 cursor.execute("USE scraping")
 
@@ -33,15 +35,18 @@ downloadDirectory = "downloaded"
 baseURL = "http://pythonscraping.com"
 
 
-def storeToDB(title, content):
+def storeToDB(title, content: str):
     global cursor
-    cursor.execute(f"INSERT INTO pages (title, content ) VALUES ({title}, {content})")
+
+    print(f"executing query INSERT INTO pages (title, content ) VALUES ({title}, {content})")
+    cursor.execute(f'INSERT INTO pages (title, content ) VALUES ("{title}", "{content}")')
     cursor.connection.commit()
+    print("committed successfully")
 
 
 def getLinks(articleLink):
     try:
-        html = open("https://en.wikipedia.org" + articleLink)
+        html = urlopen("https://en.wikipedia.org" + articleLink)
     except HTTPError as e:
         print(f"HTTP error\ncode: {e.getcode()}\n returning None")
         return None
@@ -51,12 +56,15 @@ def getLinks(articleLink):
 
     soup = BeautifulSoup(html, features="html.parser")
 
-    title = soup.find("h1").find("span").get_text()
-
-    content = soup.find("div", {"id": "mw-content-text"}).find("p").get_text()
+    title = soup.find("h1").get_text()
+    print(f"the title text is:{title }")
+    content = soup.find("div", {"id": "mw-content-text"}).find("p", attrs=None).get_text()
+    print(f"the title text is:{content}")
     storeToDB(title, content)
-
-    return soup.find("div", {"class": "bodyContent"}).findAll("a", href=re.compile("^(/wiki/)((?!:).)*$"))
+    print("retrieving links...")
+    links = soup.find("div", {"class": "bodyContent"}).findAll("a", href=re.compile("^(/wiki/)((?!:).)*$"))
+    print("successfully retrieved the links")
+    return links
 
 
 def getWiki(limit=None):
@@ -75,6 +83,7 @@ def getWiki(limit=None):
             print("-"*60)
             links = getLinks(newArticle)
     finally:
+
         cursor.close()
         connection.close()
 
@@ -162,7 +171,6 @@ def wikiTableToCSV(url: str, csvPath):
 
 
 if __name__ == "__main__":
-    wikiTableToCSV("https://en.wikipedia.org/wiki/Comparison_of_text_editors", "../files/test.csv")
-
+    getWiki(100)
 
 
