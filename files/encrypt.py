@@ -6,8 +6,29 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
 
-def encryptPassword(password, storePassword):
-    pass
+def optionSelector(question: str, options: dict, lineChar='-') -> int:
+    while True:
+        print(lineChar*60)
+        print(question)
+        for keys, values in options:
+            print(f"    {keys} - {values}")
+
+        option = int(input(">"))
+
+        if option not in list(options.keys()):
+            print("invalid option!")
+            print("try again...")
+        else:
+            break
+    return option
+
+
+def encryptPassword(password, keyPath):
+    with open(keyPath, "rb") as file:
+        key = file.read()
+    f = Fernet(key)
+    encrypted = f.encrypt(password.encode())
+    return encrypted
 
 
 def createKey(password_provided=None):
@@ -27,15 +48,19 @@ def createKey(password_provided=None):
         return Fernet.generate_key()
 
 
-def storeKey(key, path):
-    with open(path, 'w+') as file:
-        file.write(key)
+def store(info, path, bytes_=False):
+
+    if not bytes_:
+        with open(path, 'w+') as file:
+            file.write(info)
+    else:
+        with open(path, "wb") as file:
+            file.write(info)
 
 
 def encrypt():
 
-    bye = False
-    while not bye:
+    while True:
         print("="*60)
         print("\n")
         print("WELCOME")
@@ -43,35 +68,67 @@ def encrypt():
         print("\n")
         print("="*60)
         print("\n")
-        while True:
-            print("The key will be randomly generated or base on a word?")
-            print("0 - cancel")
-            print("1 - randomly generated")
-            print("2 - base on a word")
-            option = int(input(">"))
-            if option not in [0, 1, 2]:
-                print("invalid input!")
-                print("try again...")
-            else:
-                print("-"*60)
-                if option == 0:
-                    bye = True
-                    print("bye...")
-                if option == 1:
-                    key = createKey()
-                if option == 2:
-                    encryptWord = input("enter the encryption word:")
-                    key = createKey(encryptWord)
-                break
 
-        print("key successfully created.")
-        print("-" * 60)
-        print("enter the path to store the key:")
-        print("(or just the name of the file,\nin this case it will be stored at the same directory as this file)")
-        storePath = input(">")
+        mainMenuOptions = {
+            0: "exit",
+            1: "encrypt a password",
+            2: "create a new key"
+        }
+        mainMenuOption = optionSelector("options:", mainMenuOptions)
 
-        storeKey(key, storePath)
-        print("key successfully stored.")
+        if mainMenuOption is 0:
+            print("bye...")
+            break
+
+        if mainMenuOption is 1:
+            print("-"*60)
+            print("enter the password:")
+            password = input(">")
+            print("enter the key path:")
+            keyPath = input(">")
+            encryptedPassword = encryptPassword(password, keyPath)
+            print("password encrypted successfully :)")
+            print("enter the path where to store the encrypted password:")
+            passwordPath = input(">")
+            store(encryptedPassword, passwordPath, bytes_=True)
+            print(f"encrypted password store at {passwordPath}")
+
+        if mainMenuOption is 2:
+            keyOptions = {
+                0: "cancel",
+                1: "randomly generated",
+                2: "base on a word"
+            }
+            keyOption = optionSelector(
+                "The key will be randomly generated or base on a word?",
+                keyOptions)
+
+            if keyOption is 0:
+                print("going back...?")
+                continue
+
+            if keyOption is 1:
+                key = createKey()
+            if keyOption is 2:
+                encryptWord = input("enter the encryption word:")
+                key = createKey(encryptWord)
+
+            print("key successfully created.")
+            print("-" * 60)
+            print("enter the path to store the key(extension: '.key'):")
+            print("(or just the name of the file,\nin this case it will be stored at the same directory as this file)")
+
+            while True:
+                keyStorePath = input(">")
+                if keyStorePath.find(".key") is not -1:
+                    break
+
+                else:
+                    print("remember to add the extension.")
+                    print("try again")
+
+            store(key, keyStorePath, bytes_=True)
+            print(f"key stored at {keyStorePath}")
 
 
 if "__main__" == __name__:

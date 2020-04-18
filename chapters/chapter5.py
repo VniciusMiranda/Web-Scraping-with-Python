@@ -29,6 +29,7 @@
 
 from urllib.request import urlopen, urlretrieve
 from urllib.error import HTTPError, URLError
+from cryptography.fernet import Fernet
 import csv
 import pymysql as sql
 import re
@@ -36,6 +37,22 @@ import os
 import random
 import datetime as dt
 from bs4 import BeautifulSoup
+
+"""
+++++++++++++++++++++++++
+code to get the connection pass word
+"""
+
+
+def getDBPassword(filePath):
+
+    try:
+        with open(filePath, "r+") as keyInfo:
+            key = keyInfo.read()
+    except FileNotFoundError:
+        with open(filePath, "w+") as file:
+            key = Fernet.generate_key()
+            file.write(key)
 
 """
 ++++++++++++++++++++++++
@@ -60,6 +77,10 @@ def insertPageIfNotExist(url):
         return cursor.lastrowid
     else:
         return cursor.fetchone()[0]
+
+
+def insertLink(fromPageId, toPageId):
+    pass
 
 
 def storeToDB(title, content: str):
@@ -215,6 +236,6 @@ def wikiTableToCSV(url: str, csvPath):
 """
 
 if __name__ == "__main__":
-    getWiki(100)
+    getDBPassword("../files/passwd.key")
 
 
