@@ -44,15 +44,12 @@ code to get the connection pass word
 """
 
 
-def getDBPassword(filePath):
-
-    try:
-        with open(filePath, "r+") as keyInfo:
-            key = keyInfo.read()
-    except FileNotFoundError:
-        with open(filePath, "w+") as file:
-            key = Fernet.generate_key()
-            file.write(key)
+def getDBPassword(filePath, passwordPath):
+    with open(filePath, "rb") as file:
+        key = file.read()
+    with open(passwordPath, "rb") as file:
+        password = file.read()
+    return Fernet(key).decrypt(password).decode()
 
 """
 ++++++++++++++++++++++++
@@ -62,7 +59,10 @@ SQL Storing code
 random.seed(dt.datetime.now())
 
 connection = sql.connect(host='localhost', unix_socket='/var/run/mysqld/mysqld.sock',
-                         password='Piloto_052399651', user='root', db='mysql', charset='utf8')
+                         password=getDBPassword("dataBase.key", "databasePassword.bytes"),
+                         user='root',
+                         db='mysql',
+                         charset='utf8')
 
 cursor = connection.cursor()
 cursor.execute("USE wikipedia")
@@ -236,6 +236,6 @@ def wikiTableToCSV(url: str, csvPath):
 """
 
 if __name__ == "__main__":
-    getDBPassword("../files/passwd.key")
+    print(getDBPassword("../files/caninoskey.key", "../files/fodase.bytes"))
 
 

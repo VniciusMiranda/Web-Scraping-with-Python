@@ -10,7 +10,7 @@ def optionSelector(question: str, options: dict, lineChar='-') -> int:
     while True:
         print(lineChar*60)
         print(question)
-        for keys, values in options:
+        for keys, values in options.items():
             print(f"    {keys} - {values}")
 
         option = int(input(">"))
@@ -24,10 +24,17 @@ def optionSelector(question: str, options: dict, lineChar='-') -> int:
 
 
 def encryptPassword(password, keyPath):
-    with open(keyPath, "rb") as file:
-        key = file.read()
-    f = Fernet(key)
-    encrypted = f.encrypt(password.encode())
+
+    if os.path.exists(keyPath):
+        with open(keyPath, "rb") as file:
+            key = file.read()
+        f = Fernet(key)
+        encrypted = f.encrypt(password.encode())
+        print("password encrypted successfully :)")
+    else:
+        encrypted = None
+        print("path doesn't exists:c\nreturning None...")
+
     return encrypted
 
 
@@ -59,22 +66,18 @@ def store(info, path, bytes_=False):
 
 
 def encrypt():
+    print("=" * 60)
+    print("WELCOME")
+    print("This is a python program to encrypt passwords base on key (symmetric cryptography).")
 
     while True:
-        print("="*60)
-        print("\n")
-        print("WELCOME")
-        print("This is a python program to encrypt passwords base on key (symmetric cryptography).")
-        print("\n")
-        print("="*60)
-        print("\n")
-
+        print("=" * 60)
         mainMenuOptions = {
             0: "exit",
             1: "encrypt a password",
             2: "create a new key"
         }
-        mainMenuOption = optionSelector("options:", mainMenuOptions)
+        mainMenuOption = optionSelector("options:", mainMenuOptions, lineChar="")
 
         if mainMenuOption is 0:
             print("bye...")
@@ -87,11 +90,14 @@ def encrypt():
             print("enter the key path:")
             keyPath = input(">")
             encryptedPassword = encryptPassword(password, keyPath)
-            print("password encrypted successfully :)")
-            print("enter the path where to store the encrypted password:")
-            passwordPath = input(">")
-            store(encryptedPassword, passwordPath, bytes_=True)
-            print(f"encrypted password store at {passwordPath}")
+            if encryptedPassword is None:
+                print("error occurred. Returning to the main menu :/")
+                input("press any key to continue...")
+            else:
+                print("enter the path where to store the encrypted password:")
+                passwordPath = input(">")
+                store(encryptedPassword, passwordPath, bytes_=True)
+                print(f"encrypted password store at {passwordPath}")
 
         if mainMenuOption is 2:
             keyOptions = {

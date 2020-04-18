@@ -222,10 +222,10 @@ def getHistoryIPs(pageUrl):
 
 if __name__ == "__main__":
 
-    key = "<enter_your_key_here>"
+    APIkey = "<enter_your_key_here>"
     url = "https://en.wikipedia.org/wiki/Lua_(programming_language)"
 
-    print(getEditorsCountries(url, key, 5))
+    print(getEditorsCountries(url, APIkey, 5))
     print(f"the country where most of the editors are from is: {mostFrequent(countries)}")
 
 end = time.time()
