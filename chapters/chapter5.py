@@ -40,7 +40,7 @@ from bs4 import BeautifulSoup
 
 """
 ++++++++++++++++++++++++
-code to get the connection pass word
+code to get the database password
 """
 
 
@@ -59,7 +59,7 @@ SQL Storing code
 random.seed(dt.datetime.now())
 
 connection = sql.connect(host='localhost', unix_socket='/var/run/mysqld/mysqld.sock',
-                         password=getDBPassword("dataBase.key", "databasePassword.bytes"),
+                         password=getDBPassword("database/database.key", "database/database.bytes"),
                          user='root',
                          db='mysql',
                          charset='utf8')
@@ -80,10 +80,24 @@ def insertPageIfNotExist(url):
 
 
 def insertLink(fromPageId, toPageId):
+    global connection
+    global cursor
+    cursor.execute(f"SELECT * links WHERE "
+                   f"fromPageId = {int(fromPageId)} AND toPageId = {int(toPageId)}")
+
+    if cursor.rowcount is 0:
+        cursor.execute(f"INSERT INTO links (fromPageId, toPageId) VALUES ({fromPageId}, {toPageId})")
+    connection.commit()
+
+
+pages = set()
+def getSixDegreeLinks():
     pass
 
-
-def storeToDB(title, content: str):
+"""
+--------------------------------------------------
+"""
+def storeToDB(title, content):
     global cursor
 
     title = title.replace('"', "")
@@ -107,7 +121,7 @@ def getLinks(articleLink):
     soup = BeautifulSoup(html, features="html.parser")
 
     title = soup.find("h1").get_text()
-    print(f"the title text is:{title }")
+    print(f"the title text is:{title}")
     content = soup.find("div", {"id": "mw-content-text"}).find("p", attrs=None).get_text()
     print(f"the title text is:{content}")
     storeToDB(title, content)
@@ -133,9 +147,7 @@ def getWiki(limit=None):
             print("-"*60)
             links = getLinks(newArticle)
     finally:
-
-        cursor.close()
-        connection.close()
+        pass
 
 
 """
@@ -236,6 +248,5 @@ def wikiTableToCSV(url: str, csvPath):
 """
 
 if __name__ == "__main__":
-    print(getDBPassword("../files/caninoskey.key", "../files/fodase.bytes"))
-
-
+    cursor.close()
+    connection.close()

@@ -1,3 +1,7 @@
+"""
+--------------------------------------------------------------
+Temporary script to encrypt the password of the data base
+"""
 import base64
 import os
 from cryptography.fernet import Fernet
@@ -72,12 +76,13 @@ def encrypt():
 
     while True:
         print("=" * 60)
+        mainMenuQuestion = "options:"
         mainMenuOptions = {
             0: "exit",
             1: "encrypt a password",
             2: "create a new key"
         }
-        mainMenuOption = optionSelector("options:", mainMenuOptions, lineChar="")
+        mainMenuOption = optionSelector(mainMenuQuestion, mainMenuOptions, lineChar="")
 
         if mainMenuOption is 0:
             print("bye...")
