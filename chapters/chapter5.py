@@ -91,8 +91,21 @@ def insertLink(fromPageId, toPageId):
 
 
 pages = set()
-def getSixDegreeLinks():
-    pass
+def getSixDegreeLinks(pageUrl, recursionLevel):
+    global pages
+    if recursionLevel > 4:
+        return
+
+    pageId = insertPageIfNotExist(pageUrl)
+    html = urlopen("http://en.wikipedia.org" + pageUrl)
+    soup = BeautifulSoup(html, features="html.parser")
+    for link in soup.findAll("a", {"href": re.compile("^(/wiki/)((?!:).)*$")}):
+        insertLink(pageId, insertPageIfNotExist(link.attrs["href"]))
+
+        if link not in pages:
+            newLink = link
+            pages.add(link)
+            getSixDegreeLinks(pageUrl, recursionLevel + 1)
 
 """
 --------------------------------------------------
@@ -248,5 +261,7 @@ def wikiTableToCSV(url: str, csvPath):
 """
 
 if __name__ == "__main__":
+    firstPage = "/wiki/Kevin_Bacon"
+    getSixDegreeLinks(firstPage, 0)
     cursor.close()
     connection.close()
