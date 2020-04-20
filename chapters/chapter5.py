@@ -30,8 +30,10 @@
 from urllib.request import urlopen, urlretrieve
 from urllib.error import HTTPError, URLError
 from cryptography.fernet import Fernet
-import csv
+from email.mime.text import MIMEText
 import pymysql as sql
+import smtplib
+import csv
 import re
 import os
 import random
@@ -51,6 +53,23 @@ def getDBPassword(filePath, passwordPath):
         password = file.read()
     return Fernet(key).decrypt(password).decode()
 
+
+
+"""
+++++++++++++++++++++++++++++
+email sending 
+"""
+
+def sendEmail(subject, body):
+    with smtplib.SMTP_SSL('smtp.gmail.com', port=465) as smtp:
+        loginInfo = ["", ""]
+        message = MIMEText(body)
+        message['To'] = loginInfo[0]
+        message['From'] = loginInfo[0]
+        message['Subject'] = subject
+        smtp.login(loginInfo[0],loginInfo[1])
+        smtp.send_message(message)
+        smtp.quit()
 """
 ++++++++++++++++++++++++
 SQL Storing code
@@ -263,9 +282,4 @@ def wikiTableToCSV(url: str, csvPath):
 """
 
 if __name__ == "__main__":
-    firstPage = "/wiki/Kevin_Bacon"
-    try:
-        getSixDegreeLinks(firstPage, 0)
-    finally:
-        cursor.close()
-        connection.close()
+    sendEmail("TESTING THE BOOT", " Just a test bro.")

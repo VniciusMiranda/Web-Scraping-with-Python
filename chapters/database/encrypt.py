@@ -59,7 +59,7 @@ def createKey(password_provided=None):
         return Fernet.generate_key()
 
 
-def store(info, path, bytes_=False):
+def store(info, path,bytes_=False):
 
     if not bytes_:
         with open(path, 'w+') as file:
