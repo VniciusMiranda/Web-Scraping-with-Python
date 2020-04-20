@@ -70,9 +70,9 @@ cursor.execute("USE wikipedia")
 
 def insertPageIfNotExist(url):
     global cursor
-    cursor.execute(f"SELECT * FROM pages WHERE url = '{url}'")
+    cursor.execute(f"SELECT * FROM pages WHERE url = %s",(url))
     if cursor.rowcount == 0:
-        cursor.execute(f"INSERT INTO pages (url) VALUES ({url})")
+        cursor.execute(f"INSERT INTO pages (url) VALUES (%s)",(url))
         connection.commit()
         return cursor.lastrowid
     else:
@@ -82,12 +82,11 @@ def insertPageIfNotExist(url):
 def insertLink(fromPageId, toPageId):
     global connection
     global cursor
-    cursor.execute(f"SELECT * links WHERE "
-                   f"fromPageId = {int(fromPageId)} AND toPageId = {int(toPageId)}")
+    cursor.execute("SELECT * FROM links WHERE fromPageId = %s AND toPageId = %s",(int(fromPageId), int(toPageId)))
 
-    if cursor.rowcount is 0:
-        cursor.execute(f"INSERT INTO links (fromPageId, toPageId) VALUES ({fromPageId}, {toPageId})")
-    connection.commit()
+    if cursor.rowcount == 0:
+        cursor.execute(f"INSERT INTO links (fromPageId, toPageId) VALUES (%s, %s)", (int(fromPageId), int(toPageId)))
+        connection.commit()
 
 
 pages = set()
@@ -95,16 +94,19 @@ def getSixDegreeLinks(pageUrl, recursionLevel):
     global pages
     if recursionLevel > 4:
         return
-
     pageId = insertPageIfNotExist(pageUrl)
+    print("-"*60)
+    print(f"searching for six degree separation pages from:{pageUrl}")
+
     html = urlopen("http://en.wikipedia.org" + pageUrl)
     soup = BeautifulSoup(html, features="html.parser")
-    for link in soup.findAll("a", {"href": re.compile("^(/wiki/)((?!:).)*$")}):
-        insertLink(pageId, insertPageIfNotExist(link.attrs["href"]))
+    for link in soup.findAll("a", href=re.compile("^(/wiki/)((?!:).)*$")):
 
+        insertLink(pageId, insertPageIfNotExist(link.attrs["href"]))
         if link not in pages:
-            newLink = link
-            pages.add(link)
+            newLink = link.attrs["href"]
+            print(f"found new link:{newLink}")
+            pages.add(newLink)
             getSixDegreeLinks(pageUrl, recursionLevel + 1)
 
 """
@@ -262,6 +264,8 @@ def wikiTableToCSV(url: str, csvPath):
 
 if __name__ == "__main__":
     firstPage = "/wiki/Kevin_Bacon"
-    getSixDegreeLinks(firstPage, 0)
-    cursor.close()
-    connection.close()
+    try:
+        getSixDegreeLinks(firstPage, 0)
+    finally:
+        cursor.close()
+        connection.close()
