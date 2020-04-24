@@ -13,11 +13,15 @@
         internet today, mainly institutions like governments still use thing
         like PDF files as there main way of sharing information through the
         internet.
+
 """
 from io import StringIO
 from urllib.request import urlopen
 import csv
-
+from pdfminer.pdfinterp import PDFResourceManager
+from pdfminer.converter import TextConverter
+from pdfminer.layout import LAParams
+from pdfminer.pdfpage import PDFPage
 
 """
 -----------------------------
@@ -45,6 +49,28 @@ def readCSV(url="http://pythonscraping.com/files/MontyPythonAlbums.csv"):
     csvReader = csv.reader(dataFile)
     for row in csvReader:
         print(f"the name of the movie is {row[0]} the year is {row[1]}")
-readCSV()
 
+"""
+--------------------------
+PDF files
+"""
 
+def readPDF(pdfFile):
+    resourceManager = PDFResourceManager()
+    stringFile = StringIO()
+    laParams = LAParams()
+    device = TextConverter(resourceManager, stringFile, laparams=laParams)
+
+    PDFPage.get_pages(resourceManager, device, pdfFile)
+    device.close()
+
+    content = stringFile.getvalue()
+    stringFile.close()
+
+    return content
+
+exampleUrl = "http://pythonscraping.com/pages/warandpeace/chapter1.pdf"
+pdfFile = urlopen(exampleUrl)
+outPut = readPDF(pdfFile)
+print(outPut)
+pdfFile.close()
