@@ -39,7 +39,7 @@ import os
 import random
 import datetime as dt
 from bs4 import BeautifulSoup
-
+from email.message import EmailMessage
 """
 ++++++++++++++++++++++++
 code to get the database password
@@ -60,16 +60,18 @@ def getDBPassword(filePath, passwordPath):
 email sending 
 """
 
-def sendEmail(subject, body):
+def sendEmail(subject, body, targetEmail):
+    loginInfo = ["", ""]
+    message = EmailMessage()
+    message["Subject"] = "whatever"
+    message["To"] = loginInfo[0]
+    message["From"] = loginInfo[0]
+    message.set_content("something")
+
     with smtplib.SMTP_SSL('smtp.gmail.com', port=465) as smtp:
-        loginInfo = ["", ""]
-        message = MIMEText(body)
-        message['To'] = loginInfo[0]
-        message['From'] = loginInfo[0]
-        message['Subject'] = subject
+        message.add_attachment() # if some attachment is needed  use this function
         smtp.login(loginInfo[0],loginInfo[1])
         smtp.send_message(message)
-        smtp.quit()
 """
 ++++++++++++++++++++++++
 SQL Storing code
