@@ -13,7 +13,8 @@
         internet today, mainly institutions like governments still use thing
         like PDF files as there main way of sharing information through the
         internet.
-
+            This chapter didn't had much stuff and wasn't really useful,
+        unfortunately   .
 """
 from io import StringIO
 from urllib.request import urlopen
