@@ -30,7 +30,6 @@ import random
 
 from bs4 import BeautifulSoup
 
-
 random.seed(datetime.datetime.now())
 
 allIntLinks = set()
@@ -80,7 +79,7 @@ def getInternalLinks(soup, includeUrl):
 def getExternalLinks(soup, excludeUrl):
     externalLinks = []
 
-    # Finds all links that start with "http" or "www" that do
+    # Finds all links that start with "https" or "www" that do
     # not contain the current URL
     for link in soup.findAll("a",
                 href=re.compile("^(https|www)((?!"+excludeUrl+").)*$")):
