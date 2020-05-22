@@ -12,6 +12,8 @@
         sequence of words that are usually use in text and the chapter starts
         by defining the concept of n-gram and giving a sample code to get n-grams,
         in this case it is a 2-gram formatter.
+            The chapter than just show an example of how to clean the data in the code
+        and after using a software called OpenRefine.
             
 """
 
