@@ -18,6 +18,8 @@
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 from urllib.error import HTTPError
+from collections import OrderedDict
+import pprint
 import re
 import string
 
@@ -60,5 +62,7 @@ if __name__ == "__main__":
     content = soup.find("div", {"id": "mw-content-text"}).get_text()
     content = clean_input(content)
     ngrams = n_grams(content, 2)
-    print(ngrams)
+
+    pp = pprint.PrettyPrinter(indent=4)
+    pp.pprint(ngrams)
     print("number of n grams of 2 is: {0}".format(len(ngrams)))
