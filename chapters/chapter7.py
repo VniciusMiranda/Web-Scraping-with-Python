@@ -25,6 +25,7 @@ import pprint
 import re
 import string
 
+
 def n_grams(input, n):
     '''
     :param input: text
